@@ -1,0 +1,23 @@
+This project uses open source dependencies. No Alfa-Bank source, brand assets, photographs, or official scoring rules are included. Independent demo UI, no affiliation implied.
+
+Frontend direct dependencies:
+React / React DOM (Meta): MIT
+TypeScript (Microsoft): Apache-2.0
+Vite, Vitest, Tailwind CSS, PostCSS, Autoprefixer: MIT
+React Router, React Hook Form, Zod, @hookform/resolvers: MIT
+Radix UI primitives, class-variance-authority, clsx, tailwind-merge, Sonner: MIT
+Lucide: ISC
+Testing Library: MIT; jsdom: MIT
+UI wrappers follow the shadcn/ui composition pattern; shadcn/ui is MIT.
+
+Backend:
+Python: PSF-2.0
+Django, Django REST Framework, drf-spectacular: BSD-3-Clause
+psycopg / psycopg-binary: LGPL-3.0-or-later (binary distribution also bundles libpq and its dependencies)
+Gunicorn: MIT
+pytest, pytest-django: MIT
+PostgreSQL: PostgreSQL License
+Nginx: BSD-2-Clause
+Node.js: MIT and included third-party licenses
+
+Exact frontend dependency tree is recorded in frontend/package-lock.json; Python dependencies in backend/requirements.lock.txt. Full license texts and copyright notices remain in installed package distributions and container images; preserve them when redistributing. This notice summarizes direct dependencies and does not replace upstream licenses.

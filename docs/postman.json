@@ -1,0 +1,319 @@
+{
+  "info": {
+    "name": "Дело — Credit API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api/v1"
+    },
+    {
+      "key": "password",
+      "value": "Demo-Credit-2026!"
+    },
+    {
+      "key": "application_id",
+      "value": ""
+    },
+    {
+      "key": "csrf",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "CSRF",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/auth/csrf/"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set(\"csrf\", pm.response.json().csrfToken);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/auth/login/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"demo_a\",\n  \"password\": \"{{password}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/auth/me/"
+      }
+    },
+    {
+      "name": "Companies",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/companies/"
+      }
+    },
+    {
+      "name": "Products",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/products/"
+      }
+    },
+    {
+      "name": "Applications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/applications/"
+      }
+    },
+    {
+      "name": "Create draft",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/applications/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"company\": 1,\n  \"product\": 1,\n  \"creation_key\": \"{{$guid}}\",\n  \"amount\": \"1000000.00\",\n  \"term\": 24,\n  \"purpose\": \"Закупка оборудования\",\n  \"financial\": {\n    \"revenue\": \"12000000.00\",\n    \"profit\": \"2400000.00\",\n    \"debt\": \"1000000.00\"\n  }\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set(\"application_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Application detail",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/applications/{{application_id}}/"
+      }
+    },
+    {
+      "name": "Update draft",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/applications/{{application_id}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"purpose\": \"Закупка нового оборудования\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Submit",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/applications/{{application_id}}/submit/"
+      }
+    },
+    {
+      "name": "Manual decision (bank session)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/applications/{{application_id}}/decision/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"outcome\": \"OFFER_READY\",\n  \"reason\": \"Показатели изучены и одобрены сотрудником\",\n  \"amount\": \"900000.00\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Accept",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/applications/{{application_id}}/accept/"
+      }
+    },
+    {
+      "name": "Decline",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/applications/{{application_id}}/decline/"
+      }
+    },
+    {
+      "name": "Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/notifications/"
+      }
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf}}"
+          }
+        ],
+        "url": "{{base_url}}/auth/logout/"
+      }
+    }
+  ]
+}
