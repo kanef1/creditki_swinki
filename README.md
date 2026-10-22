@@ -78,7 +78,9 @@ python backend/manage.py runserver 127.0.0.1:8000
 
 ## Документация и ограничения
 
-- [Матрица требований и границы](docs/requirements.md). PDF кейса не предоставлен: соответствие ему не подтверждено.
+- [Требования пользователя и границы](docs/requirements.md), [постраничная матрица PDF](docs/pdf-compliance.md).
+- [Продуктовые гипотезы](docs/product-rationale.md) и [подготовка к сдаче](docs/submission.md).
+- [Визуальный ориентир и пределы проверки](docs/design-reference.md).
 - [Архитектура, ER и состояния](docs/architecture.md).
 - [Модель и mock-интеграции](docs/scoring.md).
 - [OpenAPI](docs/openapi.yaml) и [Postman](docs/postman.json).
@@ -90,4 +92,4 @@ python backend/manage.py runserver 127.0.0.1:8000
 
 Для внешнего production-развёртывания требуется отдельная работа: HTTPS, собственные секреты, выключение demo seed, ограничение служебных аккаунтов, проверка зависимостей, резервирование и аудит безопасности. Текущая сборка предназначена для localhost.
 
-Версия исходников фиксируется локальным Git-тегом `hackathon-v1`. Получить SHA: `git rev-parse hackathon-v1`. Удалённый репозиторий и публикация не создавались.
+Начальная версия зафиксирована тегом `hackathon-v1`, версия после сверки оригинального PDF — `hackathon-v2`. Получить SHA: `git rev-parse hackathon-v2`. Удалённый репозиторий и публикация не создавались; обязательный по PDF пункт GitHub ещё не выполнен.
