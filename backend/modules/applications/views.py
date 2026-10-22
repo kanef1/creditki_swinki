@@ -1,7 +1,8 @@
 import uuid
 from django.db import transaction
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.db.models import Q,Count,Sum,OuterRef,Subquery,DecimalField
+from decimal import Decimal
 from django.http import FileResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -9,10 +10,11 @@ from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from .models import Application
-from .serializers import ApplicationSerializer, ManualDecisionInput
+from .serializers import ApplicationSerializer, ManualDecisionInput,OfferHistorySerializer
 from .services import submit, decide, respond
 from modules.documents.models import Document
 from modules.audit.models import AuditLog
+from modules.decisions.models import CreditDecision
 
 class ApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicationSerializer
@@ -21,12 +23,32 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         qs = Application.objects.select_related('company','product','financial').prefetch_related('history__actor','verifications','scores','decisions','documents')
         if getattr(self,'swagger_fake_view',False): return qs.none()
         if not self.request.user.is_staff: qs = qs.filter(company__memberships__user=self.request.user)
-        if self.action == 'list':
+        if self.action in ['list','offers','statistics'] and self.request.query_params.get('company'):
+            try: company_id=int(self.request.query_params['company'])
+            except ValueError: raise ValidationError('Некорректный идентификатор компании')
+            qs=qs.filter(company_id=company_id)
+        if self.action in ['list','offers']:
             if self.request.query_params.get('status'): qs = qs.filter(status=self.request.query_params['status'])
             if self.request.query_params.get('search'):
                 query = self.request.query_params['search']
                 qs = qs.filter(Q(company__name__icontains=query)|Q(company__inn__icontains=query))
         return qs
+    @extend_schema(responses={200:dict})
+    @action(detail=False,methods=['get'])
+    def statistics(self,request):
+        qs=self.get_queryset()
+        counts=qs.aggregate(total=Count('id'),manual=Count('id',filter=Q(status='MANUAL_REVIEW')),offers=Count('id',filter=Q(status__in=['OFFER_READY','ACCEPTED','COMPLETED'])),rejected=Count('id',filter=Q(status='REJECTED')),accepted=Count('id',filter=Q(status='COMPLETED')))
+        latest=CreditDecision.objects.filter(application=OuterRef('pk')).order_by('-revision','-id').values('amount')[:1]
+        offered=qs.filter(status__in=['OFFER_READY','ACCEPTED','COMPLETED']).annotate(offer_amount=Subquery(latest,output_field=DecimalField(max_digits=16,decimal_places=2)))
+        amount=offered.aggregate(value=Sum('offer_amount'))['value'] or Decimal('0')
+        return Response({**counts,'offer_amount':f'{amount:.2f}'})
+
+    @extend_schema(responses=OfferHistorySerializer(many=True))
+    @action(detail=False,methods=['get'])
+    def offers(self,request):
+        offers=CreditDecision.objects.filter(application__in=self.get_queryset(),outcome='OFFER_READY').select_related('application__company','application__product').order_by('-created_at','-id')
+        page=self.paginate_queryset(offers)
+        return self.get_paginated_response(OfferHistorySerializer(page,many=True).data)
     def client(self):
         if self.request.user.is_staff: raise PermissionDenied('Действие доступно предпринимателю')
     def create(self,request,*args,**kwargs):

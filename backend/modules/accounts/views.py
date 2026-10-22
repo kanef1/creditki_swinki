@@ -54,12 +54,14 @@ class VisitorView(APIView):
     @transaction.atomic
     def post(self,request):
         if request.user.is_authenticated and not request.user.is_staff:
+            if settings.DEMO_VISITOR_ENABLED:
+                from modules.companies.demo import ensure_workspace
+                ensure_workspace(request.user)
             return Response({'ready':True})
         if not settings.DEMO_VISITOR_ENABLED:
             raise PermissionDenied('Демонстрационный контекст отключён. Требуется контекст основного приложения.')
-        from modules.companies.models import Company, CompanyMembership
         user = get_user_model().objects.create_user(username=f'visitor_{uuid4().hex}',password=None)
-        company = Company.objects.create(name='ООО «Новый вектор»',inn=f'99{uuid4().int % 10**10:010d}',age_months=48,credit_score=820)
-        CompanyMembership.objects.create(user=user,company=company)
+        from modules.companies.demo import ensure_workspace
+        ensure_workspace(user)
         login(request,user,backend='django.contrib.auth.backends.ModelBackend')
         return Response({'ready':True})

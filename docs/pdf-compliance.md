@@ -14,7 +14,7 @@
 | P04 | 6 | Связанная бизнес-логика, сохранение и динамический статус | PostgreSQL, REST, обновление карточки | Проверено PostgreSQL и HTTP smoke |
 | P05 | 7 | GitHub-репозиторий с историей | локальный Git с историей; submission.md | GitHub не опубликован |
 | P06 | 7 | Версия к дедлайну; доступ жюри для private repo | теги hackathon-v1/v2 и SHA; аккаунт жюри в submission.md | Версия есть; доступ жюри не предоставлен |
-| P07 | 7 | Cloud-native, Docker, единый воспроизводимый запуск | Compose: frontend/backend/db, healthchecks, volumes, gunicorn | Запуск успешен; 3 контейнера healthy, HTTP-проверки и 23 теста прошли |
+| P07 | 7 | Cloud-native, Docker, единый воспроизводимый запуск | Compose: frontend/backend/db, healthchecks, volumes, gunicorn | Запуск успешен; 3 контейнера healthy, HTTP-проверки и 27 тестов прошли |
 | P08 | 7 | Фиксация языка и ключевых зависимостей | базовые образы, requirements.lock.txt, package-lock.json | Реализовано |
 | P09 | 7 | README: назначение, архитектура, окружение, запуск, конфигурации и переменные | README, .env.example, architecture.md, compose.yaml | Подготовлено |
 | P10 | 7 | Синтетические данные и аккаунты для E2E | seed_demo: demo_a/b/c/d, bank | Проверено |

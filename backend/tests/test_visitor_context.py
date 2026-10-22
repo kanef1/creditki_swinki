@@ -24,7 +24,7 @@ def test_anonymous_context_is_private_and_repeatable(settings):
     assert not user.has_usable_password()
     first_company=one.get('/api/v1/companies/').data['results'][0]['id']
     assert start_context(one).status_code==200
-    assert CompanyMembership.objects.filter(user=user).count()==1
+    assert CompanyMembership.objects.filter(user=user).count()==4
     assert get_user_model().objects.count()==1
     assert start_context(two).status_code==200
     second_company=two.get('/api/v1/companies/').data['results'][0]['id']

@@ -16,3 +16,10 @@ class CompanyMembership(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='memberships')
     class Meta:
         constraints = [models.UniqueConstraint(fields=['user','company'], name='unique_membership')]
+
+class DemoCompany(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    company = models.OneToOneField(Company,on_delete=models.CASCADE,related_name='demo_profile')
+    code = models.CharField(max_length=16)
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['user','code'],name='unique_demo_company_per_user')]

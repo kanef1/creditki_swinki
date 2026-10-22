@@ -11,3 +11,8 @@ backend/uploads/
 test-results/
 playwright-report/
 *.tsbuildinfo
+versions/*.zip
+versions/*.sql
+versions/*.bundle
+versions/archives.json
+versions/*/

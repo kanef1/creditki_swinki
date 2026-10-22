@@ -410,6 +410,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/Application'
           description: ''
+  /api/v1/applications/offers/:
+    get:
+      operationId: v1_applications_offers_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOfferHistoryList'
+          description: ''
+  /api/v1/applications/statistics/:
+    get:
+      operationId: v1_applications_statistics_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/auth/csrf/:
     get:
       operationId: v1_auth_csrf_retrieve
@@ -543,6 +579,46 @@ paths:
               schema:
                 type: object
                 additionalProperties: {}
+          description: ''
+  /api/v1/demo/scenarios/:
+    get:
+      operationId: v1_demo_scenarios_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+    post:
+      operationId: v1_demo_scenarios_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioRunInput'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScenarioRunInput'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScenarioRunInput'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
           description: ''
   /api/v1/notifications/:
     get:
@@ -756,6 +832,18 @@ components:
       - term
       - updated_at
       - verifications
+    CodeEnum:
+      enum:
+      - approve
+      - counter
+      - manual
+      - reject
+      type: string
+      description: |-
+        * `approve` - approve
+        * `counter` - counter
+        * `manual` - manual
+        * `reject` - reject
     Company:
       type: object
       properties:
@@ -769,6 +857,20 @@ components:
           type: string
           maxLength: 12
         age_months:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        active:
+          type: boolean
+        tax_debt:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,14}(?:\.\d{0,2})?$
+        overdue_days:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        credit_score:
           type: integer
           maximum: 2147483647
           minimum: 0
@@ -934,6 +1036,66 @@ components:
       - created_at
       - id
       - message
+    OfferHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        application:
+          type: string
+          format: uuid
+          readOnly: true
+        revision:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,14}(?:\.\d{0,2})?$
+          nullable: true
+        term:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+        reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        company:
+          allOf:
+          - $ref: '#/components/schemas/Company'
+          readOnly: true
+        product_name:
+          type: string
+          readOnly: true
+        application_status:
+          type: string
+          readOnly: true
+        requested_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,14}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - application
+      - application_status
+      - company
+      - created_at
+      - id
+      - product_name
+      - reason
+      - requested_amount
+      - revision
     OutcomeEnum:
       enum:
       - OFFER_READY
@@ -1013,6 +1175,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Notification'
+    PaginatedOfferHistoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfferHistory'
     PaginatedProductList:
       type: object
       required:
@@ -1148,6 +1333,17 @@ components:
       - min_amount
       - name
       - rate
+    ScenarioRunInput:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/CodeEnum'
+        creation_key:
+          type: string
+          format: uuid
+      required:
+      - code
+      - creation_key
     Scoring:
       type: object
       properties:

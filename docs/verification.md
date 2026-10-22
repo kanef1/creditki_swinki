@@ -5,16 +5,16 @@
 | Django system check | 0 issues |
 | Миграции PostgreSQL 18.4 | Все применены |
 | makemigrations --check --dry-run | No changes detected |
-| pytest на PostgreSQL 18.4 | 23 passed после перехода к модулю |
+| pytest на PostgreSQL 18.4 | 27 passed после добавления истории и сценариев |
 | Конкурентное принятие оффера | Прошло, один переход ACCEPTED |
 | HTTP smoke на PostgreSQL | 4 сценария прошли через настоящие сессии и HTTP |
 | TypeScript + Vite production build | Успешно |
-| Vitest | 11 passed для одностраничного модуля |
+| Vitest | 15 passed для одностраничного модуля |
 | OpenAPI --validate | Без ошибок и предупреждений |
 | docker compose config --quiet | Успешно |
 | docker compose up --build -d --wait | Успешно; все 3 контейнера healthy |
 | Браузер, визуальная адаптивность, browser E2E | Не проверено: список доступных браузеров пуст |
-| PostgreSQL 16 | Docker postgres:16.8-alpine; 23 backend-теста прошли |
+| PostgreSQL 16 | Docker postgres:16.8-alpine; 27 backend-тестов прошли |
 | GitHub Actions | Workflow создан, удалённый запуск не выполнялся |
 | Матрица оригинального PDF | Прочитаны все 16 страниц; создана pdf-compliance.md с открытыми пунктами сдачи |
 
@@ -40,7 +40,9 @@ Docker Desktop был остановлен. Запущен через `docker de
 
 Обнаружен конфликт имени класса `outline` кнопки с утилитой Tailwind. Варианты переименованы в button-primary/secondary/ghost; чёрный контур не применяется к кнопкам в покое, focus-visible остаётся. Компоновка использует единый ритм отступов и отдельные панели действий.
 
-Проверки актуальной версии: TypeScript/Vite production build — успешно; **11 Vitest tests** — прошли, включая отправку заявки и принятие предложения через компоненты без смены страницы; **23 backend tests на PostgreSQL 18.4** — прошли; **23 tests in 8.00s на PostgreSQL 16.8 в Docker** — прошли. Compose up --build -d --wait успешен, 3 контейнера healthy. OpenAPI пересоздан и валидирован без предупреждений. `scripts/check-module.cjs` прошёл через HTTP без login endpoint: context → draft → edit → submit → checks/scoring/offer → accept → reload. Второй посетитель получил 404 на чужую заявку. Тот же HTTP-путь проверен на локальном адресе 5173. Проверка создания контекста при выключенном demo и отсутствующем CSRF также покрыта тестами.
+Проверки актуальной версии: TypeScript/Vite production build — успешно; **15 Vitest tests** — прошли, включая отправку заявки, принятие предложения, выбор компании, карточки сценариев и историю; **27 backend tests in 10.36s на PostgreSQL 18.4** — прошли; **27 tests in 12.78s на PostgreSQL 16.8 в Docker** — прошли. Compose up --build -d --wait успешен, 3 контейнера healthy. OpenAPI пересоздан и валидирован без предупреждений. `scripts/check-module.cjs` прошёл через HTTP без login endpoint: context → draft → edit → submit → checks/scoring/offer → accept → reload. Второй посетитель получил 404 на чужую заявку. Проверка создания контекста при выключенном demo и отсутствующем CSRF также покрыта тестами.
+
+`scripts/check-jury.cjs` прошёл через настоящий HTTP: четыре приватные компании и начальные заявки, исходная статистика 4 / 1 / 2 / 1 и 9,5 млн ₽, встречное предложение, повтор запроса без дубликата, отказ клиента с сохранением оффера в истории, фильтрация и изоляция второго посетителя. Backend-тесты дополнительно проверяют агрегаты по 26 заявкам и пагинацию 24 офферов. Визуальная проверка браузером по-прежнему недоступна; компонентные и HTTP-проверки не заменяют её.
 
 Референс kanef1.online получен прямым HTTP (200) и изучен по структуре клиентских ресурсов; браузерный визуальный просмотр недоступен. Старые login-сценарии выше — история проверки прежнего интерфейса, текущий README описывает новый сценарий без входа.
 

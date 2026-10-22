@@ -11,7 +11,7 @@ from modules.documents.models import Document
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['id','name','inn','age_months']
+        fields = ['id','name','inn','age_months','active','tax_debt','overdue_days','credit_score']
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,6 +48,16 @@ class DecisionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditDecision
         exclude = ['application']
+
+class OfferHistorySerializer(serializers.ModelSerializer):
+    application = serializers.UUIDField(source='application_id',read_only=True)
+    company = CompanySerializer(source='application.company',read_only=True)
+    product_name = serializers.CharField(source='application.product.name',read_only=True)
+    application_status = serializers.CharField(source='application.status',read_only=True)
+    requested_amount = serializers.DecimalField(source='application.amount',max_digits=16,decimal_places=2,read_only=True)
+    class Meta:
+        model = CreditDecision
+        fields = ['id','application','revision','amount','term','rate','reason','created_at','company','product_name','application_status','requested_amount']
 
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:

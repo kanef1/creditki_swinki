@@ -12,6 +12,7 @@ from modules.applications.serializers import CompanySerializer, ProductSerialize
 from modules.companies.models import Company
 from modules.products.models import CreditProduct
 from modules.notifications.models import Notification
+from modules.companies.views import ScenariosView
 
 class Companies(viewsets.ReadOnlyModelViewSet):
     serializer_class = CompanySerializer
@@ -49,3 +50,4 @@ router.register('applications',ApplicationViewSet,basename='application')
 router.register('notifications',Notifications,basename='notification')
 urlpatterns = [path('health/',health),path('api/v1/',include(router.urls)),path('api/v1/auth/csrf/',CsrfView.as_view()),path('api/v1/auth/login/',LoginView.as_view()),path('api/v1/auth/logout/',LogoutView.as_view()),path('api/v1/auth/me/',ProfileView.as_view()),path('api/schema/',SpectacularAPIView.as_view(),name='schema'),path('api/docs/',SpectacularSwaggerView.as_view(url_name='schema'))]
 urlpatterns += [path('api/v1/context/',VisitorView.as_view())]
+urlpatterns += [path('api/v1/demo/scenarios/',ScenariosView.as_view())]
