@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from modules.accounts.views import CsrfView, LoginView, LogoutView, ProfileView
+from modules.accounts.views import CsrfView, LoginView, LogoutView, ProfileView, VisitorView
 from modules.applications.views import ApplicationViewSet
 from modules.applications.serializers import CompanySerializer, ProductSerializer
 from modules.companies.models import Company
@@ -48,3 +48,4 @@ router.register('products',Products)
 router.register('applications',ApplicationViewSet,basename='application')
 router.register('notifications',Notifications,basename='notification')
 urlpatterns = [path('health/',health),path('api/v1/',include(router.urls)),path('api/v1/auth/csrf/',CsrfView.as_view()),path('api/v1/auth/login/',LoginView.as_view()),path('api/v1/auth/logout/',LogoutView.as_view()),path('api/v1/auth/me/',ProfileView.as_view()),path('api/schema/',SpectacularAPIView.as_view(),name='schema'),path('api/docs/',SpectacularSwaggerView.as_view(url_name='schema'))]
+urlpatterns += [path('api/v1/context/',VisitorView.as_view())]

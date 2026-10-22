@@ -1,0 +1,8 @@
+import {z} from 'zod';
+export const money=(value:string|number)=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0}).format(Number(value));
+export const date=(value:string)=>new Date(value).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+export const statusLabels:Record<string,string>={DRAFT:'Черновик',SUBMITTED:'Отправлена',VALIDATING:'Проверяем данные',ENRICHING:'Проверяем компанию',SCORING:'Оцениваем заявку',MANUAL_REVIEW:'На рассмотрении',ADDITIONAL_INFO_REQUIRED:'Нужны сведения',OFFER_READY:'Предложение готово',REJECTED:'Отказ',ACCEPTED:'Принято',COMPLETED:'Предложение принято',DECLINED:'Предложение отклонено'};
+export const applicationSchema=z.object({company:z.coerce.number().min(1,'Выберите компанию'),product:z.coerce.number().min(1,'Выберите продукт'),amount:z.coerce.number().positive('Укажите сумму'),term:z.coerce.number().int().positive('Укажите срок'),purpose:z.string().trim().min(5,'Опишите цель: минимум 5 символов').max(1000),revenue:z.coerce.number().positive('Выручка должна быть положительной'),profit:z.coerce.number(),debt:z.coerce.number().min(0,'Долг не может быть отрицательным')}).refine(v=>v.profit<=v.revenue,{message:'Прибыль не может превышать выручку',path:['profit']});
+export type ApplicationForm=z.infer<typeof applicationSchema>;
+export const defaultForm={company:0,product:0,amount:1000000,term:24,purpose:'',revenue:12000000,profit:2400000,debt:1000000};
+export function monthlyPayment(amount:number,term:number,rate:number){const r=rate/1200;return term>0?(r?amount*r/(1-Math.pow(1+r,-term)):amount/term):0}

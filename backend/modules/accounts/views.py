@@ -7,6 +7,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db import transaction
+from rest_framework.exceptions import PermissionDenied
+from uuid import uuid4
 
 class LoginInput(serializers.Serializer):
     username = serializers.CharField(max_length=150)
@@ -38,3 +43,23 @@ class LogoutView(APIView):
 class ProfileView(APIView):
     @extend_schema(responses={200:dict})
     def get(self,request): return Response({'username':request.user.username,'is_staff':request.user.is_staff})
+
+@method_decorator(csrf_protect,name='dispatch')
+class VisitorView(APIView):
+    """Isolated synthetic visitor context for the local embeddable demo only."""
+    permission_classes = [AllowAny]
+    throttle_scope = 'visitor'
+
+    @extend_schema(request=None,responses={200:dict})
+    @transaction.atomic
+    def post(self,request):
+        if request.user.is_authenticated and not request.user.is_staff:
+            return Response({'ready':True})
+        if not settings.DEMO_VISITOR_ENABLED:
+            raise PermissionDenied('Демонстрационный контекст отключён. Требуется контекст основного приложения.')
+        from modules.companies.models import Company, CompanyMembership
+        user = get_user_model().objects.create_user(username=f'visitor_{uuid4().hex}',password=None)
+        company = Company.objects.create(name='ООО «Новый вектор»',inn=f'99{uuid4().int % 10**10:010d}',age_months=48,credit_score=820)
+        CompanyMembership.objects.create(user=user,company=company)
+        login(request,user,backend='django.contrib.auth.backends.ModelBackend')
+        return Response({'ready':True})

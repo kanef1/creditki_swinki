@@ -21,6 +21,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-demo-database-only}
       POSTGRES_HOST: db
       DEMO_PASSWORD: ${DEMO_PASSWORD:-Demo-Credit-2026!}
+      DEMO_VISITOR_ENABLED: ${DEMO_VISITOR_ENABLED:-1}
       ALLOWED_HOSTS: localhost,127.0.0.1,backend
       CSRF_TRUSTED_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
     depends_on:

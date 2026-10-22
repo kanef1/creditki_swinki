@@ -5,7 +5,7 @@ info:
 paths:
   /api/schema/:
     get:
-      operationId: api_schema_retrieve
+      operationId: schema_retrieve
       description: |-
         OpenApi3 schema for this API. Format can be selected via content negotiation.
 
@@ -124,7 +124,7 @@ paths:
           - zh-hans
           - zh-hant
       tags:
-      - api
+      - schema
       security:
       - cookieAuth: []
       - {}
@@ -150,7 +150,7 @@ paths:
           description: ''
   /api/v1/applications/:
     get:
-      operationId: api_v1_applications_list
+      operationId: v1_applications_list
       parameters:
       - name: page
         required: false
@@ -159,7 +159,7 @@ paths:
         schema:
           type: integer
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -170,9 +170,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedApplicationList'
           description: ''
     post:
-      operationId: api_v1_applications_create
+      operationId: v1_applications_create
       tags:
-      - api
+      - v1
       requestBody:
         content:
           application/json:
@@ -196,7 +196,7 @@ paths:
           description: ''
   /api/v1/applications/{id}/:
     get:
-      operationId: api_v1_applications_retrieve
+      operationId: v1_applications_retrieve
       parameters:
       - in: path
         name: id
@@ -206,7 +206,7 @@ paths:
         description: A UUID string identifying this application.
         required: true
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -217,7 +217,7 @@ paths:
                 $ref: '#/components/schemas/Application'
           description: ''
     patch:
-      operationId: api_v1_applications_partial_update
+      operationId: v1_applications_partial_update
       parameters:
       - in: path
         name: id
@@ -227,7 +227,7 @@ paths:
         description: A UUID string identifying this application.
         required: true
       tags:
-      - api
+      - v1
       requestBody:
         content:
           application/json:
@@ -250,7 +250,7 @@ paths:
           description: ''
   /api/v1/applications/{id}/accept/:
     post:
-      operationId: api_v1_applications_accept_create
+      operationId: v1_applications_accept_create
       parameters:
       - in: path
         name: id
@@ -260,7 +260,7 @@ paths:
         description: A UUID string identifying this application.
         required: true
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -272,7 +272,7 @@ paths:
           description: ''
   /api/v1/applications/{id}/decision/:
     post:
-      operationId: api_v1_applications_decision_create
+      operationId: v1_applications_decision_create
       parameters:
       - in: path
         name: id
@@ -282,7 +282,7 @@ paths:
         description: A UUID string identifying this application.
         required: true
       tags:
-      - api
+      - v1
       requestBody:
         content:
           application/json:
@@ -306,7 +306,7 @@ paths:
           description: ''
   /api/v1/applications/{id}/decline/:
     post:
-      operationId: api_v1_applications_decline_create
+      operationId: v1_applications_decline_create
       parameters:
       - in: path
         name: id
@@ -316,7 +316,7 @@ paths:
         description: A UUID string identifying this application.
         required: true
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -328,7 +328,7 @@ paths:
           description: ''
   /api/v1/applications/{id}/documents/:
     post:
-      operationId: api_v1_applications_documents_create
+      operationId: v1_applications_documents_create
       parameters:
       - in: path
         name: id
@@ -338,7 +338,7 @@ paths:
         description: A UUID string identifying this application.
         required: true
       tags:
-      - api
+      - v1
       requestBody:
         content:
           application/json:
@@ -362,7 +362,7 @@ paths:
           description: ''
   /api/v1/applications/{id}/documents/{document_id}/:
     get:
-      operationId: api_v1_applications_documents_retrieve
+      operationId: v1_applications_documents_retrieve
       parameters:
       - in: path
         name: document_id
@@ -377,7 +377,7 @@ paths:
         description: A UUID string identifying this application.
         required: true
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -390,7 +390,7 @@ paths:
           description: ''
   /api/v1/applications/{id}/submit/:
     post:
-      operationId: api_v1_applications_submit_create
+      operationId: v1_applications_submit_create
       parameters:
       - in: path
         name: id
@@ -400,7 +400,7 @@ paths:
         description: A UUID string identifying this application.
         required: true
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -412,9 +412,9 @@ paths:
           description: ''
   /api/v1/auth/csrf/:
     get:
-      operationId: api_v1_auth_csrf_retrieve
+      operationId: v1_auth_csrf_retrieve
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       - {}
@@ -428,9 +428,9 @@ paths:
           description: ''
   /api/v1/auth/login/:
     post:
-      operationId: api_v1_auth_login_create
+      operationId: v1_auth_login_create
       tags:
-      - api
+      - v1
       requestBody:
         content:
           application/json:
@@ -456,9 +456,9 @@ paths:
           description: ''
   /api/v1/auth/logout/:
     post:
-      operationId: api_v1_auth_logout_create
+      operationId: v1_auth_logout_create
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -471,9 +471,9 @@ paths:
           description: ''
   /api/v1/auth/me/:
     get:
-      operationId: api_v1_auth_me_retrieve
+      operationId: v1_auth_me_retrieve
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -486,7 +486,7 @@ paths:
           description: ''
   /api/v1/companies/:
     get:
-      operationId: api_v1_companies_list
+      operationId: v1_companies_list
       parameters:
       - name: page
         required: false
@@ -495,7 +495,7 @@ paths:
         schema:
           type: integer
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -507,7 +507,7 @@ paths:
           description: ''
   /api/v1/companies/{id}/:
     get:
-      operationId: api_v1_companies_retrieve
+      operationId: v1_companies_retrieve
       parameters:
       - in: path
         name: id
@@ -516,7 +516,7 @@ paths:
         description: A unique integer value identifying this company.
         required: true
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -526,9 +526,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Company'
           description: ''
+  /api/v1/context/:
+    post:
+      operationId: v1_context_create
+      description: Isolated synthetic visitor context for the local embeddable demo
+        only.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/notifications/:
     get:
-      operationId: api_v1_notifications_list
+      operationId: v1_notifications_list
       parameters:
       - name: page
         required: false
@@ -537,7 +555,7 @@ paths:
         schema:
           type: integer
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -549,7 +567,7 @@ paths:
           description: ''
   /api/v1/notifications/{id}/:
     get:
-      operationId: api_v1_notifications_retrieve
+      operationId: v1_notifications_retrieve
       parameters:
       - in: path
         name: id
@@ -558,7 +576,7 @@ paths:
         description: A unique integer value identifying this notification.
         required: true
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -570,7 +588,7 @@ paths:
           description: ''
   /api/v1/notifications/{id}/read/:
     post:
-      operationId: api_v1_notifications_read_create
+      operationId: v1_notifications_read_create
       parameters:
       - in: path
         name: id
@@ -579,7 +597,7 @@ paths:
         description: A unique integer value identifying this notification.
         required: true
       tags:
-      - api
+      - v1
       requestBody:
         content:
           application/json:
@@ -603,7 +621,7 @@ paths:
           description: ''
   /api/v1/products/:
     get:
-      operationId: api_v1_products_list
+      operationId: v1_products_list
       parameters:
       - name: page
         required: false
@@ -612,7 +630,7 @@ paths:
         schema:
           type: integer
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
@@ -624,7 +642,7 @@ paths:
           description: ''
   /api/v1/products/{id}/:
     get:
-      operationId: api_v1_products_retrieve
+      operationId: v1_products_retrieve
       parameters:
       - in: path
         name: id
@@ -633,7 +651,7 @@ paths:
         description: A unique integer value identifying this credit product.
         required: true
       tags:
-      - api
+      - v1
       security:
       - cookieAuth: []
       responses:
