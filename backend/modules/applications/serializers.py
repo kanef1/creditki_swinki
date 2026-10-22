@@ -9,9 +9,22 @@ from modules.decisions.models import CreditDecision
 from modules.documents.models import Document
 
 class CompanySerializer(serializers.ModelSerializer):
+    financial_snapshot = serializers.SerializerMethodField()
+
+    def get_financial_snapshot(self,company) -> dict | None:
+        from modules.companies.models import DemoCompany
+        from modules.companies.demo import profile_for
+        entry=DemoCompany.objects.filter(company=company).first()
+        if entry:
+            profile=profile_for(entry.code)
+            return {**{field:profile[field] for field in ['revenue','profit','debt']},'period_months':min(company.age_months,12)}
+        latest=FinancialData.objects.filter(application__company=company).order_by('-application__created_at').first()
+        if latest is None: return None
+        return {**FinancialSerializer(latest).data,'period_months':min(company.age_months,12)}
+
     class Meta:
         model = Company
-        fields = ['id','name','inn','age_months','active','tax_debt','overdue_days','credit_score']
+        fields = ['id','name','inn','age_months','active','tax_debt','overdue_days','credit_score','financial_snapshot']
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:

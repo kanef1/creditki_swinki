@@ -9,5 +9,5 @@ def recommend(application, score):
     if application.amount > limit:
         if limit < application.product.min_amount:
             return 'MANUAL_REVIEW', 'Расчётный лимит ниже минимальной суммы продукта', None
-        return 'OFFER_READY', 'Встречное предложение: сумма ограничена 30% годовой выручки', limit
+        return 'OFFER_READY', 'Встречное предложение: сумма ограничена 30% выручки отчётного периода', limit
     return 'OFFER_READY', 'Устойчивые показатели, стоп-факторы отсутствуют', application.amount

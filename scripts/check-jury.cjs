@@ -7,6 +7,9 @@ function session(){const jar={};return async(path,method='GET',body,status=200)=
   const one=session(),two=session();
   for(const request of [one,two]){await request('auth/csrf/');await request('context/','POST');await request('auth/csrf/');}
   const profiles=(await one('demo/scenarios/')).results;assert.equal(profiles.length,4);assert.equal(new Set(profiles.map(p=>p.company)).size,4);
+  const companies=(await one('companies/')).results;
+  for(const p of profiles){const financial=companies.find(c=>c.id===p.company).financial_snapshot;assert.equal(financial.period_months,Math.min(p.age_months,12));for(const key of ['revenue','profit','debt'])assert.equal(financial[key],p[key]);}
+  const young=profiles.find(p=>p.code==='reject');assert.equal(young.period_months,3);assert.equal(young.revenue,'650000.00');
   const statistics=await one('applications/statistics/');assert.deepEqual(statistics,{total:4,manual:1,offers:2,rejected:1,accepted:0,offer_amount:'9500000.00'});
   const apps=(await one('applications/')).results;
   for(const p of profiles){const app=apps.find(a=>a.company===p.company);assert.equal(app.status,p.expected_status);assert.equal(app.verifications.length,2);assert.equal(app.scores.length,1);}
@@ -18,5 +21,5 @@ function session(){const jar={};return async(path,method='GET',body,status=200)=
   assert.equal((await one('applications/offers/?status=DECLINED')).count,1);
   await two(`applications/${app.id}/`,'GET',undefined,404);
   assert.equal((await two('applications/statistics/')).total,4);
-  console.log('Jury HTTP: 4 private companies, all outcomes, computed statistics, idempotent replay, offer history, filters and visitor isolation passed.');
+  console.log('Jury HTTP: consistent financial snapshots and periods, 4 private companies, all outcomes, computed statistics, idempotent replay, offer history, filters and visitor isolation passed.');
 })().catch(e=>{console.error(e.message);process.exitCode=1});

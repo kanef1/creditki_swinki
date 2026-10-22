@@ -1,6 +1,6 @@
 export interface User {username:string;is_staff:boolean}
 export interface Page<T>{results:T[];count:number;next:string|null;previous:string|null}
-export interface Company{id:number;name:string;inn:string;age_months:number;active?:boolean;tax_debt?:string;overdue_days?:number;credit_score?:number}
+export interface Company{id:number;name:string;inn:string;age_months:number;active?:boolean;tax_debt?:string;overdue_days?:number;credit_score?:number;financial_snapshot?:(Financial&{period_months:number})|null}
 export interface Product{id:number;name:string;description:string;min_amount:string;max_amount:string;min_term:number;max_term:number;rate:string}
 export interface Financial{revenue:string;profit:string;debt:string}
 export interface Score{id:number;revision:number;score:number;risk:string;factors:{label:string;points:number}[];stops:string[];explanation:string;recommendation:string}

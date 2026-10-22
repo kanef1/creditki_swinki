@@ -874,7 +874,13 @@ components:
           type: integer
           maximum: 2147483647
           minimum: 0
+        financial_snapshot:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
       required:
+      - financial_snapshot
       - id
       - inn
       - name

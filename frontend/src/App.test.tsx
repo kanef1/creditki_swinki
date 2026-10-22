@@ -8,4 +8,20 @@ const moduleData={companies:[{id:1,name:'Тестовая компания',inn:
 beforeEach(()=>{vi.mocked(initializeModule).mockResolvedValue(moduleData)});
 afterEach(()=>{cleanup();vi.unstubAllGlobals()});
 describe('credit form',()=>{it('rejects inconsistent profit and negative debt',()=>{expect(applicationSchema.safeParse({company:1,product:1,amount:100000,term:12,purpose:'Закупка товаров',revenue:100,profit:200,debt:-1}).success).toBe(false)});it('accepts consistent financial data',()=>{expect(applicationSchema.safeParse({company:1,product:1,amount:100000,term:12,purpose:'Закупка товаров',revenue:100,profit:20,debt:0}).success).toBe(true)});it('opens without a login screen and has exactly four sections',async()=>{render(<App/>);await screen.findByText('На что нужны средства?');expect(screen.getAllByRole('tab')).toHaveLength(4);expect(screen.queryByText('Войти в кабинет')).not.toBeInTheDocument();expect(screen.queryByLabelText('Пароль')).not.toBeInTheDocument()});it('keeps product selection and calculates conditions within the same page',async()=>{render(<App/>);await screen.findByText('На что нужны средства?');fireEvent.click(screen.getByRole('button',{name:/Оборудование/}));fireEvent.click(screen.getByRole('button',{name:/Рассчитать условия/}));await screen.findByText('Подберите комфортные условия');expect(screen.getByLabelText('Сумма кредита, ₽')).toHaveValue(1000000);expect(screen.getByText('18.00%')).toBeInTheDocument();expect(window.location.pathname).toBe('/')});it('validates the application before opening a submit confirmation',async()=>{render(<App/>);await screen.findByText('На что нужны средства?');fireEvent.mouseDown(screen.getByRole('tab',{name:/Заявка/}),{button:0,ctrlKey:false});fireEvent.click(screen.getByRole('button',{name:/Отправить заявку/}));await screen.findByText('Опишите цель: минимум 5 символов');expect(screen.queryByRole('dialog')).not.toBeInTheDocument()});it('shows a retryable context error',async()=>{vi.mocked(initializeModule).mockRejectedValueOnce(new Error('Нет соединения'));render(<App/>);await screen.findByRole('alert');fireEvent.click(screen.getByRole('button',{name:'Повторить'}));await waitFor(()=>expect(screen.getAllByRole('tab')).toHaveLength(4))})});
+it('selects a company before the credit and carries its actual period and financials into the form',async()=>{
+  const young={id:2,name:'Молодой бизнес',inn:'990000000002',age_months:3,financial_snapshot:{revenue:'650000.00',profit:'-120000.00',debt:'800000.00',period_months:3}};
+  vi.mocked(initializeModule).mockResolvedValue({...moduleData,companies:[moduleData.companies[0],young]});
+  const {container}=render(<App/>);
+  await screen.findByRole('heading',{name:'Для какой компании нужен кредит?'});
+  expect(container.querySelector('.company-selection-panel')!.compareDocumentPosition(container.querySelector('.product-grid')!)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  fireEvent.click(screen.getByRole('button',{name:'Молодой бизнес'}));
+  expect(screen.getByText('Выручка за 3 мес.')).toBeInTheDocument();
+  fireEvent.mouseDown(screen.getByRole('tab',{name:/Заявка/}),{button:0,ctrlKey:false});
+  expect(screen.getByLabelText('Выручка за 3 мес., ₽')).toHaveValue(650000);
+  expect(screen.getByLabelText('Прибыль за 3 мес., ₽')).toHaveValue(-120000);
+  expect(screen.getByLabelText('Текущий долг, ₽')).toHaveValue(800000);
+  expect(screen.getByText('Компания для заявки')).toBeInTheDocument();
+  expect(container.textContent).not.toMatch(/\?{3}|\uFFFD/);
+});
+
 describe('API errors',()=>{it('reports network failure',async()=>{vi.stubGlobal('fetch',vi.fn().mockRejectedValue(new Error('offline')));await expect(api('products/')).rejects.toThrow('Нет соединения')});it('reports server validation',async()=>{vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:false,status:400,json:async()=>({error:{details:{amount:['Сумма вне диапазона']}}})}));await expect(api('products/')).rejects.toThrow('Сумма вне диапазона')})});

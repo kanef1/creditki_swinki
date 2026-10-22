@@ -10,7 +10,7 @@ def evaluate(company, financial, amount):
     burden = financial.debt / financial.revenue if financial.revenue else Decimal(99)
     add('Долговая нагрузка', 20 if burden <= Decimal('.3') else 10 if burden <= Decimal('.6') else 0)
     add('Кредитная история', 25 if company.credit_score >= 750 else 10 if company.credit_score >= 600 else 0)
-    add('Сумма к годовой выручке', 15 if amount <= financial.revenue * Decimal('.3') else 5)
+    add('Сумма к выручке отчётного периода', 15 if amount <= financial.revenue * Decimal('.3') else 5)
     stops = []
     if not company.active: stops.append('Компания не действует')
     if company.overdue_days > 60: stops.append('Просрочка более 60 дней')

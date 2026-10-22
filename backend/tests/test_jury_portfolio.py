@@ -67,3 +67,29 @@ def test_jury_features_disabled_outside_demo(jury,settings):
     assert c.get('/api/v1/demo/scenarios/').data=={'enabled':False,'results':[]}
     assert c.post('/api/v1/demo/scenarios/',{'code':'approve','creation_key':str(uuid4())},format='json',**headers).status_code==403
     assert APIClient().get('/api/v1/applications/statistics/').status_code==403
+
+def test_company_financials_have_actual_period_and_legacy_companies_are_not_empty(jury):
+    from modules.companies.models import Company,CompanyMembership
+    from modules.applications.models import FinancialData
+    from django.contrib.auth import get_user_model
+    c,headers=jury
+    profiles=c.get('/api/v1/demo/scenarios/').data['results']
+    companies=c.get('/api/v1/companies/').data['results']
+    for profile in profiles:
+        company=next(row for row in companies if row['id']==profile['company'])
+        snapshot=company['financial_snapshot']
+        assert snapshot['period_months']==min(profile['age_months'],12)
+        assert all(snapshot[field]==profile[field] for field in ['revenue','profit','debt'])
+    young=next(p for p in profiles if p['code']=='reject')
+    assert young['period_months']==3 and young['revenue']=='650000.00'
+    # Existing submitted figures are audit history, not a new company's defaults.
+    FinancialData.objects.filter(application__company_id=young['company']).update(revenue='5000000.00')
+    assert next(row for row in c.get('/api/v1/companies/').data['results'] if row['id']==young['company'])['financial_snapshot']['revenue']=='650000.00'
+    user=get_user_model().objects.get(username=c.get('/api/v1/auth/me/').data['username'])
+    legacy=Company.objects.create(name='Legacy without profile',inn='990000009999',age_months=54)
+    CompanyMembership.objects.create(user=user,company=legacy)
+    assert c.get(f'/api/v1/companies/{legacy.pk}/').data['financial_snapshot'] is None
+    from modules.applications.serializers import CompanySerializer
+    source=FinancialData.objects.filter(application__company_id=profiles[0]['company']).first()
+    source.application.company=legacy;source.application.save(update_fields=['company'])
+    assert CompanySerializer(legacy).data['financial_snapshot']['revenue']==str(source.revenue)
