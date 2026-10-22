@@ -1,0 +1,202 @@
+{
+  "info": {
+    "name": "Alfa-Bank Smart Credit Portal API v1",
+    "_postman_id": "78b27814-1188-466d-8e47-creditportal2026",
+    "description": "Коллекция REST API для хакатона Альфа-Банка: Умный кредитный кабинет предпринимателя",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01. Auth",
+      "item": [
+        {
+          "name": "Login (Entrepreneur A)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"entrepreneur_a\",\n  \"password\": \"alfa2026pass\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/login/"
+          }
+        },
+        {
+          "name": "Login (Bank Officer)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"officer_alfa\",\n  \"password\": \"alfa2026pass\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/login/"
+          }
+        },
+        {
+          "name": "Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": "{{baseUrl}}/api/v1/auth/me/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02. Products & Calculator",
+      "item": [
+        {
+          "name": "Get Products Catalog",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/products/"
+          }
+        },
+        {
+          "name": "Calculate Loan Payments",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 1,\n  \"amount\": 3000000,\n  \"term_months\": 12\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/products/calculate/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03. Companies",
+      "item": [
+        {
+          "name": "Lookup Company by INN",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": "{{baseUrl}}/api/v1/companies/lookup/?inn=7701234567"
+          }
+        },
+        {
+          "name": "Get User Companies",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": "{{baseUrl}}/api/v1/companies/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04. Applications Pipeline",
+      "item": [
+        {
+          "name": "List Applications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": "{{baseUrl}}/api/v1/applications/"
+          }
+        },
+        {
+          "name": "Create Application Draft",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": 1,\n  \"product\": 1,\n  \"requested_amount\": 2500000,\n  \"term_months\": 12,\n  \"purpose\": \"Пополнение оборотных средств\",\n  \"auto_submit\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/applications/"
+          }
+        },
+        {
+          "name": "Get Application Details",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": "{{baseUrl}}/api/v1/applications/1/"
+          }
+        },
+        {
+          "name": "Submit Application to Pipeline",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": "{{baseUrl}}/api/v1/applications/1/submit/"
+          }
+        },
+        {
+          "name": "Accept Credit Offer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accept\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/decisions/application/1/respond/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05. Bank Officer (Underwriting)",
+      "item": [
+        {
+          "name": "Get Underwriter Queue",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+            "url": "{{baseUrl}}/api/v1/applications/queue/?status_group=review"
+          }
+        },
+        {
+          "name": "Apply Manual Underwriter Decision",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Token {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision_type\": \"APPROVED\",\n  \"approved_amount\": 4000000,\n  \"approved_term_months\": 24,\n  \"approved_rate\": 14.5,\n  \"notes\": \"Факторы риска проверены андеррайтером.\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/decisions/application/3/manual/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06. Demo Control",
+      "item": [
+        {
+          "name": "Get Demo Scenarios Info",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/demo/scenarios/"
+          }
+        },
+        {
+          "name": "Reset Demo Data",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/demo/reset/"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "token", "value": "" }
+  ]
+}

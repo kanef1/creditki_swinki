@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: alfa_credit_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-credit_portal_db}
+      POSTGRES_USER: ${DB_USER:-credit_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-credit_secure_pass_2026}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-credit_admin} -d ${DB_NAME:-credit_portal_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "${PORT_DB:-5432}:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: alfa_credit_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-alfa-hackathon-2026-production-secret-key}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-*}
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: ${DB_NAME:-credit_portal_db}
+      DB_USER: ${DB_USER:-credit_admin}
+      DB_PASSWORD: ${DB_PASSWORD:-credit_secure_pass_2026}
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+      - "${PORT_BACKEND:-8000}:8000"
+    volumes:
+      - backend_media:/app/media
+      - backend_static:/app/staticfiles
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: alfa_credit_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${PORT_FRONTEND:-3000}:80"
+
+volumes:
+  postgres_data:
+  backend_media:
+  backend_static:
