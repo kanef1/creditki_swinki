@@ -1,5 +1,7 @@
 # Фактические проверки — 22 октября 2026
 
+Временная внешняя публикация: отдельный Compose-проект `credit-public`, 30 backend-тестов прошли за 9.74s с тестовыми origins. По HTTPS localhost.run прошли `check-jury.cjs` и `check-module.cjs` с собственным Origin, cookies и CSRF. Главная страница вернула 200; login, документация API и операция decision — 403. Общие demo/bank аккаунты в публичной БД не создаются. Исходный Cloudflare Tunnel в этой сети был нестабилен и остановлен. Ссылка localhost.run временная, адрес хранится локально в `.runtime/public-url.txt`.
+
 | Проверка | Результат |
 |---|---|
 | Django system check | 0 issues |

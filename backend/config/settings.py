@@ -4,10 +4,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 DEMO_VISITOR_ENABLED = os.getenv('DEMO_VISITOR_ENABLED','0') == '1'
+PUBLIC_DEMO = os.getenv('PUBLIC_DEMO','0') == '1'
 DEBUG = os.getenv('DEBUG', '0') == '1'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,backend').split(',')
 INSTALLED_APPS = ['django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions', 'rest_framework', 'drf_spectacular'] + [f'modules.{name}' for name in ['accounts','companies','products','applications','documents','verification','scoring','decisions','notifications','audit']]
 MIDDLEWARE = ['django.middleware.security.SecurityMiddleware','django.contrib.sessions.middleware.SessionMiddleware','django.middleware.common.CommonMiddleware','django.middleware.csrf.CsrfViewMiddleware','django.contrib.auth.middleware.AuthenticationMiddleware']
+MIDDLEWARE.insert(1,'config.public_demo.PublicDemoMiddleware')
 ROOT_URLCONF = 'config.urls'
 TEMPLATES = [{'BACKEND':'django.template.backends.django.DjangoTemplates','DIRS':[],'APP_DIRS':True,'OPTIONS':{'context_processors':['django.template.context_processors.request']}}]
 WSGI_APPLICATION = 'config.wsgi.application'
