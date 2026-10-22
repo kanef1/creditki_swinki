@@ -22,7 +22,7 @@ services:
       POSTGRES_HOST: db
       DEMO_PASSWORD: ${DEMO_PASSWORD:-Demo-Credit-2026!}
       ALLOWED_HOSTS: localhost,127.0.0.1,backend
-      CSRF_TRUSTED_ORIGINS: http://localhost:8080
+      CSRF_TRUSTED_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
     depends_on:
       db:
         condition: service_healthy

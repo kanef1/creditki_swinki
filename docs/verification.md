@@ -5,16 +5,16 @@
 | Django system check | 0 issues |
 | Миграции PostgreSQL 18.4 | Все применены |
 | makemigrations --check --dry-run | No changes detected |
-| pytest на PostgreSQL 18.4 | 13 passed после сверки PDF |
+| pytest на PostgreSQL 18.4 | 19 passed после исправления CSRF |
 | Конкурентное принятие оффера | Прошло, один переход ACCEPTED |
 | HTTP smoke на PostgreSQL | 4 сценария прошли через настоящие сессии и HTTP |
 | TypeScript + Vite production build | Успешно |
-| Vitest | 5 passed |
+| Vitest | 7 passed после исправления CSRF |
 | OpenAPI --validate | Без ошибок и предупреждений |
 | docker compose config --quiet | Успешно |
-| docker compose up --build -d | Не проверено: Docker daemon недоступен |
+| docker compose up --build -d --wait | Успешно; все 3 контейнера healthy |
 | Браузер, визуальная адаптивность, browser E2E | Не проверено: список доступных браузеров пуст |
-| PostgreSQL 16 | Локально не запускался; указан в Compose и CI |
+| PostgreSQL 16 | Docker postgres:16.8-alpine; 20 backend-тестов прошли |
 | GitHub Actions | Workflow создан, удалённый запуск не выполнялся |
 | Матрица оригинального PDF | Прочитаны все 16 страниц; создана pdf-compliance.md с открытыми пунктами сдачи |
 
@@ -23,6 +23,16 @@
 После получения PDF 22 октября: полностью извлечён и прочитан текст 16 страниц; создана постраничная матрица `pdf-compliance.md`, уточнены требования к сдаче и отдельные рекомендации. Добавлены два интеграционных теста: одинаковая оценка риска при трёх продуктах приводит к разным ставкам предложения; изменение лимита продукта между сохранением черновика и отправкой блокирует обработку без частичных результатов. Повторный PostgreSQL pytest: **13 passed in 4.51s**. Django check: 0 issues; проверка миграций: No changes detected. После корректировки палитры повторно прошли TypeScript/Vite build и **5 frontend tests**.
 
 Текущий вид alfabank.ru не проверен: web вернул timeout/502, прямой HTTP-запрос не прошёл. Источник визуальных решений и ограничения зафиксированы в `design-reference.md`. Повторный запрос списка доступных браузеров вернул пустой список. PDF использован для анализа текста требований; внешний сайт не использован как подтверждённый снимок интерфейса.
+
+## Исправление входа и запуск Docker
+
+22 октября воспроизведён пользовательский дефект: POST login с настоящим `Origin: http://127.0.0.1:5173` возвращал HTML 403. Ранее HTTP smoke без Origin ошибочно подтверждал работоспособность браузерного входа. Исправлены доверенные loopback origins для Vite/Compose; Nginx передаёт Host с портом. CSRF_FAILURE_VIEW возвращает JSON, frontend сбрасывает кеш токена после 403 и показывает сообщение о сессии. CSRF остаётся включённым: посторонний Origin и отсутствие токена отклоняются тестами.
+
+Docker Desktop был остановлен. Запущен через `docker desktop start --detach`; engine 29.5.3 отвечает, включая обычный `docker info`. Образы собраны, `docker compose up --build -d --wait` завершился успешно. frontend, backend и db имеют статус healthy. В контейнере с PostgreSQL 16.8 прошли **20 tests in 7.36s**. Frontend TypeScript/Vite build и **7 Vitest tests** прошли.
+
+Дополнительно обнаружено отсутствие Django TEMPLATES: Swagger возвращал 500. Загрузчик шаблонов настроен; тест страницы Swagger прошёл. `/health/`, `/api/docs/` и `/api/schema/` через Nginx возвращают 200. `scripts/check-running.cjs` проверил login/profile/catalog/applications/logout для demo_a и bank с Origin localhost:8080 и 127.0.0.1:8080. Проверка не создаёт и не удаляет заявки. Локальный вход на 5173 также проверен с обоими Origin до перехода к Docker.
+
+Рабочий контейнерный адрес: http://127.0.0.1:8080/. Docker оставлен запущенным. Визуальный browser QA и удалённый CI по-прежнему не выполнялись.
 
 HTTP smoke: login с CSRF, каталог, компания, существующий результат демонстрационного сценария, создание новой заявки, submit, две проверки, scoring, повторное чтение сохранённого результата и принятие офферов. Ручной запрос сведений, повторная отправка, ручное одобрение и контроль ролей покрыты API integration tests. Браузерный клик-путь не выполнялся.
 

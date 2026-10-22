@@ -15,7 +15,7 @@
 | React/TS, RHF/Zod, shadcn, Tailwind | frontend | build, component tests |
 | Docker, nginx, gunicorn | compose.yaml, Dockerfiles | compose smoke test |
 | OpenAPI, Postman, описание модели | schema endpoint, docs | schema generation |
-| Обязательные требования PDF | pdf-compliance.md | Сверено; GitHub, Docker smoke и browser QA остаются открытыми |
+| Обязательные требования PDF | pdf-compliance.md | Сверено; Docker проверен; GitHub и browser QA остаются открытыми |
 
 MVP — синтетический кредитный процесс без выдачи денег и юридически значимой подписи. Допущения: синхронный конвейер, сотрудники имеют доступ ко всей демо-очереди, деньги в рублях, годовая выручка. Принятие предложения завершает демо-процесс.
 

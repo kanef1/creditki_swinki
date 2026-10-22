@@ -6,6 +6,8 @@
 
 Нужен Docker Desktop с работающим Linux engine и Docker Compose v2.
 
+Если команда сообщает, что pipe docker_engine не найден, сначала запустите Docker Desktop. В установленной версии с Desktop CLI можно выполнить `docker desktop start`, затем проверить `docker info`.
+
 ```sh
 docker compose up --build -d
 ```
@@ -36,6 +38,8 @@ docker compose exec backend python manage.py seed_demo --reset
 ```
 
 `--reset` удаляет заявки, историю и результаты только четырёх демо-компаний и создаёт их заново. Файлы на диске не очищает. Без флага команда не дублирует заявки. При старте seed обновляет пароли демо-аккаунтов значением DEMO_PASSWORD.
+
+Проверка входа с браузерным Origin без создания заявок: `node scripts/check-running.cjs`. По умолчанию проверяет http://127.0.0.1:8080; другой адрес задаётся через APP_URL. Поддерживаются localhost и 127.0.0.1. После обновления конфигурации ранее открытую страницу нужно перезагрузить.
 
 ## Проверка для жюри
 
